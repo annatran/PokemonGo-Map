@@ -393,6 +393,10 @@ function pad(number) {
 
 function pokemonLabel(name, disappear_time, id, latitude, longitude, encounter_id) {
   var disappear_date = new Date(disappear_time)
+  var disappear_hour = disappear_date.getHours();
+  var ampm = disappear_hour >= 12 ? 'pm' : 'am';
+  disappear_hour = disappear_hour % 12;
+  disappear_hour = disappear_hour ? disappear_hour : 12;
 
   var contentstring = `
     <div>
@@ -403,7 +407,7 @@ function pokemonLabel(name, disappear_time, id, latitude, longitude, encounter_i
       </small>
     </div>
     <div>
-      Disappears at ${pad(disappear_date.getHours())}:${pad(disappear_date.getMinutes())}:${pad(disappear_date.getSeconds())}
+      Disappears at ${pad(disappear_hour)}:${pad(disappear_date.getMinutes())}:${pad(disappear_date.getSeconds())} ${ampm}
       <span class='label-countdown' disappears-at='${disappear_time}'>(00m00s)</span>
     </div>
     <div>
