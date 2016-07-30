@@ -337,6 +337,34 @@ function initSidebar() {
   $('#scanned-switch').prop('checked', Store.get('showScanned'));
   $('#sound-switch').prop('checked', Store.get('playSound'));
 
+  var browserLocationButton = $(document.getElementById('browser-location'));
+  var browserLocationButtonDefaultText = browserLocationButton.text();
+  if ("geolocation" in navigator) {
+    browserLocationButton.on('click', function(event) {
+      event.preventDefault();
+      browserLocationButton.attr('disabled', 'disabled');
+      browserLocationButton.text('Fetching your location ...');
+      navigator.geolocation.getCurrentPosition(function(position) {
+        browserLocationButton.text('Found location! Moving map ...');
+        var loc = {
+          "lat": position.coords.latitude,
+          "lng": position.coords.longitude
+        }
+
+        $.post("next_loc?lat=" + loc.lat + "&lon=" + loc.lng, {}).done(function (data) {
+          $("#next-location").val("");
+          map.setCenter(loc);
+          marker.setPosition(loc);
+          browserLocationButton.removeAttr('disabled');
+          browserLocationButton.text(browserLocationButtonDefaultText);
+        });
+      });
+    });
+  } else {
+    browserLocationButton.attr('disabled', 'disabled');
+    browserLocationButton.attr('title', 'You cannot use geolocation, since your browser does not support this.');
+  }
+
   var searchBox = new google.maps.places.SearchBox(document.getElementById('next-location'));
   $("#next-location").css("background-color", $('#geoloc-switch').prop('checked') ? "#e0e0e0" : "#ffffff");
 
